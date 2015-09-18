@@ -1,1 +1,1 @@
-bin/server --port 80
+bin/server --port $PORT

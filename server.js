@@ -7,14 +7,16 @@ var debug = require('debug')('localtunnel-server');
 var http_proxy = require('http-proxy');
 
 var proxy = http_proxy.createProxyServer({
-    target: 'http://localtunnel.github.io'
+    target: 'http://jsonborn.io'
 });
+    // target: 'http://localtunnel.github.io'
 
 proxy.on('error', function(err) {
     log.error(err);
 });
 
 proxy.on('proxyReq', function(proxyReq, req, res, options) {
+    console.log("proxyReq")
     // rewrite the request so it hits the correct url on github
     // also make sure host header is what we expect
     proxyReq.path = '/www' + proxyReq.path;
@@ -229,6 +231,9 @@ module.exports = function(opt) {
     });
 
     var server = bouncy(function(req, res, bounce) {
+        console.log("----")
+        console.log(req)
+        console.log("----")
         debug('request %s', req.url);
 
         // if we should bounce this request, then don't send to our server

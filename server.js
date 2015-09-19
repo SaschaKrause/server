@@ -51,7 +51,9 @@ function maybe_bounce(req, res, bounce) {
 
     var client_id = subdomain;
     var client = clients[client_id];
+    debugger
     console.log("client_id?" + client_id)
+    console.log("clients" + clients)
     console.log("client?" + client)
 
     // no such subdomain
@@ -67,7 +69,6 @@ function maybe_bounce(req, res, bounce) {
     // we can't respond to these requests
     var finished = false;
     on_finished(res, function(err) {
-        console.log("finished!")
         if (req.headers['upgrade'] == 'websocket') {
             return;
         }
@@ -123,7 +124,7 @@ function maybe_bounce(req, res, bounce) {
 }
 
 function new_client(id, opt, cb) {
-
+    debugger
     console.log("id: " + id)
     // can't ask for id already is use
     // TODO check this new id again
@@ -163,6 +164,7 @@ module.exports = function(opt) {
     var app = express();
 
     app.get('/', function(req, res, next) {
+        debugger
         console.log("new client")
         console.log(req)
 
@@ -239,7 +241,7 @@ module.exports = function(opt) {
         // console.log(req)
         console.log("----")
         debug('request %s', req.url);
-
+        debugger
         // if we should bounce this request, then don't send to our server
         if (maybe_bounce(req, res, bounce)) {
             return;

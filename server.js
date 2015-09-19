@@ -118,6 +118,7 @@ function maybe_bounce(req, res, bounce) {
 
 function new_client(id, opt, cb) {
 
+    console.log("id: " + id)
     // can't ask for id already is use
     // TODO check this new id again
     if (clients[id]) {
@@ -156,11 +157,15 @@ module.exports = function(opt) {
     var app = express();
 
     app.get('/', function(req, res, next) {
+        console.log("new client")
+        console.log(req)
+
         if (req.query['new'] === undefined) {
             return next();
         }
 
         var req_id = rand_id();
+        console.log("req_id: " + req_id)
         debug('making new client with id %s', req_id);
         new_client(req_id, opt, function(err, info) {
             if (err) {
@@ -175,6 +180,7 @@ module.exports = function(opt) {
     });
 
     app.get('/', function(req, res, next) {
+        console.log("proxy?")
         proxy.web(req, res);
     });
 
@@ -187,6 +193,7 @@ module.exports = function(opt) {
     });
 
     app.get('/:req_id', function(req, res, next) {
+        console.log("/:req_id " + req.param('req_id'))
         var req_id = req.param('req_id');
 
         // limit requested hostnames to 20 characters

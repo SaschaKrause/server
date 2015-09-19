@@ -45,13 +45,14 @@ function maybe_bounce(req, res, bounce) {
     }
 
     var subdomain = tldjs.getSubdomain(hostname);
-    console.log("subdomain?" + subdomain)
     if (!subdomain) {
         return false;
     }
 
     var client_id = subdomain;
     var client = clients[client_id];
+    console.log("client_id?" + client_id)
+    console.log("client?" + client)
 
     // no such subdomain
     // we use 502 error to the client to signify we can't service the request
@@ -66,6 +67,7 @@ function maybe_bounce(req, res, bounce) {
     // we can't respond to these requests
     var finished = false;
     on_finished(res, function(err) {
+        console.log("finished!")
         if (req.headers['upgrade'] == 'websocket') {
             return;
         }
@@ -240,7 +242,6 @@ module.exports = function(opt) {
 
         // if we should bounce this request, then don't send to our server
         if (maybe_bounce(req, res, bounce)) {
-            console.log("bounce?" + bounce)
             return;
         };
 

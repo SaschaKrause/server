@@ -39,11 +39,13 @@ var stats = {
 function maybe_bounce(req, res, bounce) {
     // without a hostname, we won't know who the request is for
     var hostname = req.headers.host;
+    console.log(hostname)
     if (!hostname) {
         return false;
     }
 
     var subdomain = tldjs.getSubdomain(hostname);
+    console.log("subdomain?" + subdomain)
     if (!subdomain) {
         return false;
     }
@@ -232,12 +234,13 @@ module.exports = function(opt) {
 
     var server = bouncy(function(req, res, bounce) {
         console.log("----")
-        console.log(req)
+        // console.log(req)
         console.log("----")
         debug('request %s', req.url);
 
         // if we should bounce this request, then don't send to our server
         if (maybe_bounce(req, res, bounce)) {
+            console.log("bounce?" + bounce)
             return;
         };
 

@@ -53,7 +53,6 @@ function maybe_bounce(req, res, bounce) {
     var client = clients[client_id];
     debugger
     console.log("client_id?" + client_id)
-    console.log("clients" + clients)
     console.log("client?" + client)
 
     // no such subdomain

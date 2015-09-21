@@ -36,10 +36,10 @@ var clientMap = [];
 clientMap.push({
     authToken: 'authtooooooken',
     subdomains: [{
-        sub: 'pixBackendSk',
+        sub: 'pixbackendsk',
         port: 3000
     },{
-        sub: 'pixFrontendSk',
+        sub: 'pixfrontendsk',
         port: 3003
     }]
 });

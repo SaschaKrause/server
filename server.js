@@ -165,7 +165,12 @@ function getAuthenticatedOrRandomSubdomain(authToken, port) {
     var foundClient = _.findWhere(clientMap, {authToken: 'authtooooooken'});
 
     if(foundClient && foundClient.subdomains) {
-        return _.findWhere(foundClient.subdomains, {port: parseInt(port)}).sub
+        var foundSubdomain = _.findWhere(foundClient.subdomains, {port: parseInt(port)})
+        if(foundSubdomain && foundSubdomain.sub) {
+            return .sub
+        } else {
+            return rand_id();
+        }
     } else {
         return rand_id();
     }

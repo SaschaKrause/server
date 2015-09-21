@@ -1,3 +1,7 @@
+
+
+
+
 # localtunnel-server [![Build Status](https://secure.travis-ci.org/defunctzombie/localtunnel-server.png)](http://travis-ci.org/defunctzombie/localtunnel-serer) #
 
 localtunnel exposes your localhost to the world for easy testing and sharing! No need to mess with DNS or deploy just to have others test out your changes.
@@ -37,3 +41,13 @@ lt --host http://sub.example.tld:1234 --port 9000
 You will be assigned a url similar to ```qdci.sub.example.com:1234```
 
 If your server is being a reverse proxy (i.e. nginx) and is able to listen on port 80, then you do not need the ```:1234``` part of the hostname for the ```lt``` client
+
+
+
+### personal vps notes
+
+how to node-debug on remote VPS
+- ON VPS: node-debug --no-debug-brk web-server.js
+- ON DEV MACHINE: ssh -L 8080:127.0.0.1:8080 root@92.51.135.201 -N
+- BROWSER: http://127.0.0.1:8080/?ws=127.0.0.1:8080&port=5858
+- START REMOTE: ssh root@92.51.135.201 screen -d -m 'nodejs ~/workspace/server/bin/server'

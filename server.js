@@ -2,6 +2,7 @@ var log = require('bookrc');
 var express = require('express');
 var bouncy = require('bouncy');
 var tldjs = require('tldjs');
+var _ = require('lodash');
 var on_finished = require('on-finished');
 var debug = require('debug')('localtunnel-server');
 var http_proxy = require('http-proxy');
@@ -16,7 +17,6 @@ proxy.on('error', function(err) {
 });
 
 proxy.on('proxyReq', function(proxyReq, req, res, options) {
-    console.log("proxyReq")
     // rewrite the request so it hits the correct url on github
     // also make sure host header is what we expect
     proxyReq.path = '/www' + proxyReq.path;
@@ -31,6 +31,18 @@ var PRODUCTION = process.env.NODE_ENV === 'production';
 // id -> client http server
 var clients = Object.create(null);
 
+var clientMap = [];
+
+clientMap.push({
+    authToken: 'authtooooooken',
+    subdomains: [{
+        sub: 'pixBackendSk',
+        port: 3000
+    },{
+        sub: 'pixFrontendSk',
+        port: 3003
+    }]
+});
 // proxy statistics
 var stats = {
     tunnels: 0
@@ -39,7 +51,6 @@ var stats = {
 function maybe_bounce(req, res, bounce) {
     // without a hostname, we won't know who the request is for
     var hostname = req.headers.host;
-    console.log(hostname)
     if (!hostname) {
         return false;
     }
@@ -51,9 +62,6 @@ function maybe_bounce(req, res, bounce) {
 
     var client_id = subdomain;
     var client = clients[client_id];
-    debugger
-    console.log("client_id?" + client_id)
-    console.log("client?" + client)
 
     // no such subdomain
     // we use 502 error to the client to signify we can't service the request
@@ -123,8 +131,6 @@ function maybe_bounce(req, res, bounce) {
 }
 
 function new_client(id, opt, cb) {
-    debugger
-    console.log("id: " + id)
     // can't ask for id already is use
     // TODO check this new id again
     if (clients[id]) {
@@ -155,6 +161,16 @@ function new_client(id, opt, cb) {
     });
 }
 
+function getAuthenticatedOrRandomSubdomain(authToken, port) {
+    var foundClient = _.findWhere(clientMap, {authToken: 'authtooooooken'});
+
+    if(foundClient && foundClient.subdomains) {
+        return _.findWhere(foundClient.subdomains, {port: parseInt(port)}).sub
+    } else {
+        return rand_id();
+    }
+}
+
 module.exports = function(opt) {
     opt = opt || {};
 
@@ -163,16 +179,12 @@ module.exports = function(opt) {
     var app = express();
 
     app.get('/', function(req, res, next) {
-        debugger
-        console.log("new client")
-        console.log(req)
 
         if (req.query['new'] === undefined) {
             return next();
         }
 
-        var req_id = rand_id();
-        console.log("req_id: " + req_id)
+        var req_id = getAuthenticatedOrRandomSubdomain(req.headers['auth-token'], req.headers.port);
         debug('making new client with id %s', req_id);
         new_client(req_id, opt, function(err, info) {
             if (err) {
@@ -187,7 +199,6 @@ module.exports = function(opt) {
     });
 
     app.get('/', function(req, res, next) {
-        console.log("proxy?")
         proxy.web(req, res);
     });
 
@@ -200,7 +211,6 @@ module.exports = function(opt) {
     });
 
     app.get('/:req_id', function(req, res, next) {
-        console.log("/:req_id " + req.param('req_id'))
         var req_id = req.param('req_id');
 
         // limit requested hostnames to 20 characters
@@ -236,11 +246,7 @@ module.exports = function(opt) {
     });
 
     var server = bouncy(function(req, res, bounce) {
-        console.log("----")
-        // console.log(req)
-        console.log("----")
         debug('request %s', req.url);
-        debugger
         // if we should bounce this request, then don't send to our server
         if (maybe_bounce(req, res, bounce)) {
             return;

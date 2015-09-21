@@ -17,6 +17,7 @@
     "express": "4.10.5",
     "http-proxy": "1.11.1",
     "localenv": "0.2.2",
+    "lodash": "^3.10.1",
     "on-finished": "2.2.0",
     "optimist": "0.6.1",
     "stackup": "0.0.5",
